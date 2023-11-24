@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+//criar padrão dt, uma classe pra representar um game c menos dados
+
 @Entity
 @Table(name = "tb_game")
 public class Game {
