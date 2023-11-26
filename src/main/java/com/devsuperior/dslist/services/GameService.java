@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsuperior.dslist.dto.GameDTO;
 import com.devsuperior.dslist.dto.GameMinDTO;
 import com.devsuperior.dslist.entities.Game;
+import com.devsuperior.dslist.projections.GameMinProjection;
 import com.devsuperior.dslist.repositories.GameRepository;
 
 //devemos registrar esse componente no sistema, qualquer componente q n herde nenhum jpa deve ser registrado, pro framework gerenciar-los
@@ -40,4 +41,14 @@ public class GameService {
 		GameDTO dto = new GameDTO(result); //converter para dto o game encontrado
 		return dto;
 	}
+	
+	@Transactional(readOnly = true)
+	public List<GameMinDTO> findByList(Long listId){
+		//recebo i id da lista e retorno os games da lista
+	
+		List<GameMinProjection> result = gameRepository.searchByList(listId);
+		//criar um construtor pra projection, igual fora feito para a entidade e instanciar os elementos da lista obtida
+		return result.stream().map(x -> new GameMinDTO(x)).toList();
+	}
+	
 }
