@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 //portanto iremos criar uma classe auxiliar que tera as duas referencias
 
 @Entity
-@Table(name = "tb_belongig")
+@Table(name = "tb_belonging")
 public class Belonging {
 
 	/*private Game game;
