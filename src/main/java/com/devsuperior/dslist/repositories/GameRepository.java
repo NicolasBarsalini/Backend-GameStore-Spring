@@ -25,5 +25,6 @@ public interface GameRepository extends JpaRepository<Game, Long>{ //colocar o t
 				""") //o :listId la em cima, colocamos o parametro
 		//nativeQuery -> informa que a consulta sera em query padrão do sql e o resultado da consulta deve ser de saída projection, ai criamos a projection no pacote projections informando os gets de cada parametro sql
 	List<GameMinProjection> searchByList(Long listId); //defino a assinatura do metodo e o parametro
+	
 
 }

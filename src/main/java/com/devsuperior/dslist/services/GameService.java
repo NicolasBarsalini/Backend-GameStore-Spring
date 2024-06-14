@@ -10,44 +10,73 @@ import com.devsuperior.dslist.dto.GameDTO;
 import com.devsuperior.dslist.dto.GameMinDTO;
 import com.devsuperior.dslist.entities.Game;
 import com.devsuperior.dslist.projections.GameMinProjection;
+import com.devsuperior.dslist.repositories.BelongingRepository;
 import com.devsuperior.dslist.repositories.GameRepository;
 
-//devemos registrar esse componente no sistema, qualquer componente q n herde nenhum jpa deve ser registrado, pro framework gerenciar-los
-
-//@Component, ou:
-@Service //registra como componente do sistema, injetar um componente no outro
+@Service
 public class GameService {
 	
-	@Autowired //njeto uma instancia do gamerepository dentro do gameservice
-	private GameRepository gameRepository; //fazemos a injeção do componente gamerepository, visando unir dois componentes
+	@Autowired 
+	private GameRepository gameRepository;
+	
+	@Autowired
+	private BelongingRepository bl;
 	
 	@Transactional(readOnly = true)
-	public List<GameMinDTO> findAll(){ //meu service devolve uma lista de objeto, o service devolve dto, retorna uma lista de gamemindto
-		List<Game> result = gameRepository.findAll(); //faz uma consulta no banco de dados e traz os todos os objetos
-		List<GameMinDTO> dto = result.stream().map(x -> new GameMinDTO (x)).toList(); //converter a lista de game para gamemin dto
-		 //passa o próprio x como argumento
+	public List<GameMinDTO> findAll(){ 
+		List<Game> result = gameRepository.findAll();
+		List<GameMinDTO> dto = result.stream().map(x -> new GameMinDTO (x)).toList();
 		return dto;
-		//ou
-		//return gameRepository.findAll().stream().map(x -> new GameMinDTO (x)).toList();
 	}
 	
-	//devemos criar o controlador rest agora
+	@Transactional
+	public GameDTO insert(GameDTO dto) {
+		Game entity = new Game();
+		entity.setTitle(dto.getTitle());
+		entity.setGenre(dto.getGenre());
+		entity.setImgUrl(dto.getImgUrl());
+		entity.setLongDescription(dto.getLongDescription());
+		entity.setShortDescription(dto.getShortDescription());
+		entity.setYear(dto.getYear());
+		entity.setPlatforms(dto.getPlatforms());
+		entity.setScore(dto.getScore());
+		
+		entity = gameRepository.save(entity);
+		
+		return new GameDTO(entity);
+	}
+	
+	@Transactional
+	public GameDTO update(Long id, GameDTO dto) {
+        Game entity = gameRepository.findById(id).orElseThrow();
+        entity.setTitle(dto.getTitle());
+        entity.setGenre(dto.getGenre());
+        entity.setImgUrl(dto.getImgUrl());
+        entity.setLongDescription(dto.getLongDescription());
+        entity.setShortDescription(dto.getShortDescription());
+        entity.setYear(dto.getYear());
+        entity.setPlatforms(dto.getPlatforms());
+        entity.setScore(dto.getScore());
+        entity = gameRepository.save(entity);
+        return new GameDTO(entity);
+	}
+	
+	@Transactional
+	public void delete(Long id) {
+		bl.deleteByGameId(id);
+		gameRepository.deleteById(id);
+	}
 
-	//colocar uma notation para induzir toda a pratica de acesso ao banco de dados seja transacional, duradoura e funcional
-	@Transactional(readOnly = true) //do spring
+	@Transactional(readOnly = true)
 	public GameDTO findById(Long gameId) {
-		Game result = gameRepository.findById(gameId).get(); //retorna um tipo optional, para pegar o game dentro do optional, tenho q colocar um .get
-		//poderiamos colocar um tratamento de exeções caso n exista o id.
-		GameDTO dto = new GameDTO(result); //converter para dto o game encontrado
+		Game result = gameRepository.findById(gameId).get();
+		GameDTO dto = new GameDTO(result);
 		return dto;
 	}
 	
 	@Transactional(readOnly = true)
 	public List<GameMinDTO> findByList(Long listId){
-		//recebo i id da lista e retorno os games da lista
-	
 		List<GameMinProjection> result = gameRepository.searchByList(listId);
-		//criar um construtor pra projection, igual fora feito para a entidade e instanciar os elementos da lista obtida
 		return result.stream().map(x -> new GameMinDTO(x)).toList();
 	}
 	

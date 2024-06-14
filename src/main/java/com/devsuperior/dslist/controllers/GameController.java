@@ -4,24 +4,27 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devsuperior.dslist.dto.GameDTO;
 import com.devsuperior.dslist.dto.GameMinDTO;
+import com.devsuperior.dslist.entities.Game;
 import com.devsuperior.dslist.services.GameService;
 
 @RestController
-//fazer o mapeamento do recurso
-@CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping(path = "/games") //configuro o caminho q vai ser respondido na api
-public class GameController { //ele vai ser a porta de entrada do backend, ele quem disponibiliza a API
+@CrossOrigin(origins = "http://localhost:4200") // somente o angular na porta 4200 pode acessar o serviço
+@RequestMapping(path = "/games") 
+public class GameController { 
 	
 	@Autowired
-	private GameService gameService; //injetar o componente gameService
-	//devemos mapear ele também com o verbo http, como e um endpoint pra buscar os games, ele é get
+	private GameService gameService;
 	
 	@GetMapping
 	public List<GameMinDTO> findAll(){
@@ -29,9 +32,24 @@ public class GameController { //ele vai ser a porta de entrada do backend, ele q
 		return result;
 	}
 	
-	@GetMapping(value = "/{id}") //deve receber um id  e devemos configurar que o id do finByid seja o do que ser mandado na requisição
-	public GameDTO findById(@PathVariable Long id){ //indica que este id eh o que foi usado no corpo da requisição
+	@GetMapping(value = "/{id}") 
+	public GameDTO findById(@PathVariable Long id){ 
 		GameDTO result = gameService.findById(id);
 		return result;
+	}
+	
+	@PostMapping(value = "/create")
+	public GameDTO insert(@RequestBody GameDTO dto) {
+		return gameService.insert(dto);
+	}
+	
+	@PutMapping(value = "/update/{id}")
+	public GameDTO update(@PathVariable Long id, @RequestBody GameDTO dto) {
+		return gameService.update(id, dto);
+	}
+	
+	@DeleteMapping(value = "/delete/{id}")
+	public void delete(@PathVariable Long id) {
+		gameService.delete(id);
 	}
 }
